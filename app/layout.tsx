@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     icon: "/icon.png",
   },
   authors: [{name: "Farel Nanda Setiawan"}],
-  keywords: ['My Money', 'Pengelola uang', 'Monitor uang'],
+  keywords: ['My Money', 'My money id', 'Pengelola uang', 'Pengelola uang indonesia', 'Monitoring uang'],
   verification: {
     google: "agROQ63Dl86d7ogJSvW5QOatzS1VTv9cNA0RIvJPuq4"
   }
