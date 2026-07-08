@@ -8,51 +8,76 @@ import { db } from "@/database/db";
 export default function Add() {
   const router = useRouter();
 
+  // Fungsi pembantu untuk mendapatkan string tanggal hari ini (format: YYYY-MM-DD)
+  const getHariIniStr = () => {
+    return new Date().toISOString().split("T")[0];
+  };
+
   // State untuk form manajemen data
-  const [tipe, setTipe] = useState("pemasukan"); // default: pengeluaran
+  const [tipe, setTipe] = useState("Pemasukan");
   const [nominal, setNominal] = useState("");
+  const [tanggalPilihan, setTanggalPilihan] = useState(getHariIniStr()); // 💡 State baru untuk input tanggal
   const [kategori, setKategori] = useState("Makanan & Minuman");
   const [keterangan, setKeterangan] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Fungsi memformat angka mentah menjadi string ber-titik ribuan Indonesia
+  const formatRibuan = (value: string) => {
+    const angkaMurni = value.replace(/\D/g, "");
+    if (!angkaMurni) return "";
+    return new Intl.NumberFormat("id-ID").format(Number(angkaMurni));
+  };
+
+  // Fungsi mengambil angka murninya saja untuk disimpan sebagai number
+  const dapatkanAngkaMurni = (value: string) => {
+    return Number(value.replace(/\./g, ""));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validasi data sederhana
-    if (!nominal || Number(nominal) <= 0) {
+    const angkaNumeric = dapatkanAngkaMurni(nominal);
+
+    if (!nominal || angkaNumeric <= 0) {
       alert("Masukkan jumlah nominal yang valid!");
+      return;
+    }
+
+    if (!tanggalPilihan) {
+      alert("Silakan pilih tanggal transaksi terlebih dahulu!");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const SystemDate = new Date();
+      // 💡 Membuat objek Date berdasarkan tanggal yang dipilih oleh user
+      const objekTanggal = new Date(tanggalPilihan);
 
       const dataBaru = {
-        date: SystemDate.toLocaleDateString("id-ID", {
+        // Format tampilan lokal Indonesia (Contoh: "08 Juli 2026")
+        date: objekTanggal.toLocaleDateString("id-ID", {
           day: "2-digit",
           month: "long",
           year: "numeric",
         }),
         category: kategori,
-        amount: Number(nominal),
+        amount: angkaNumeric,
         type: tipe,
         note: keterangan.trim() || "-",
-        dateStr: SystemDate.toISOString().split('T')[0],
+        dateStr: tanggalPilihan, // 💡 Disimpan dalam format YYYY-MM-DD untuk keperluan filter data
       };
 
       await db.table("transactions").add(dataBaru);
 
-      console.log("Data siap disimpan ke DB lokal:", dataBaru);
       alert("Catatan keuangan berhasil disimpan!");
 
       setTipe('pemasukan');
       setNominal('');
+      setTanggalPilihan(getHariIniStr());
       setKategori('Makanan & Minuman');
       setKeterangan('');
 
-      // Redirect kembali ke halaman beranda setelah data sukses diproses
       router.push("/");
     } catch (error) {
       console.error("Gagal menyimpan transaksi:", error);
@@ -64,48 +89,53 @@ export default function Add() {
 
   return (
     <AppShell>
-      <div className="w-full max-w-4xl mx-auto animate-fade-in pb-12">
-        {/* CONTAINER FORM */}
-        <div className="max-w-md mx-auto bg-[#1e293b] border border-slate-800/80 rounded-2xl p-6 shadow-xl mt-2">
-          {/* Header Form */}
-          <div className="flex justify-between items-center mb-6 border-b border-slate-800/60 pb-3">
-            <h3 className="text-base font-extrabold text-slate-100 flex items-center gap-2 tracking-wide">
+      <div className="w-full max-w-4xl mx-auto pb-12">
+        <div className="max-w-md mx-auto bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm mt-2 text-black dark:text-white">
+          
+          <div className="flex justify-between items-center mb-6 border-b border-zinc-200 dark:border-zinc-900 pb-3">
+            <h3 className="text-base font-black flex items-center gap-2 tracking-tight">
               <span>📝</span> Tambah Transaksi
             </h3>
             <button
+              type="button"
               onClick={() => router.back()}
-              className="text-xs text-gray-400 hover:text-gray-200 bg-[#0f172a] px-3 py-1.5 rounded-lg border border-slate-800 transition"
+              className="text-xs text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white bg-zinc-100 dark:bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 transition font-bold"
             >
               Batal
             </button>
           </div>
 
-          {/* Body Form */}
           <form className="space-y-5" onSubmit={handleSubmit}>
-            {/* Selector Tipe Transaksi (Pemasukan vs Pengeluaran) */}
+            {/* Tipe Transaksi */}
             <div>
-              <label className="block text-[10px] font-bold uppercase text-gray-400 mb-2 tracking-wider">
+              <label className="block text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 mb-2 tracking-wider">
                 Tipe Transaksi
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
-                  onClick={() => setTipe("pemasukan")}
-                  className={`py-3 rounded-xl border font-bold text-sm tracking-wide shadow-sm transition-all duration-200 ${
-                    tipe === "pemasukan"
-                      ? "border-emerald-500 bg-emerald-950/40 text-emerald-400"
-                      : "border-slate-800 bg-[#0f172a] text-gray-400 hover:text-gray-200"
+                  onClick={() => {
+                    setTipe("Pemasukan");
+                    setKategori("Gaji / Pendapatan");
+                  }}
+                  className={`py-3 rounded-xl border font-bold text-sm tracking-wide transition duration-150 ${
+                    tipe === "Pemasukan"
+                      ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
+                      : "border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white"
                   }`}
                 >
                   🟢 Pemasukan
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTipe("pengeluaran")}
-                  className={`py-3 rounded-xl border font-bold text-sm tracking-wide shadow-sm transition-all duration-200 ${
-                    tipe === "pengeluaran"
-                      ? "border-red-500 bg-red-950/40 text-red-400"
-                      : "border-slate-800 bg-[#0f172a] text-gray-400 hover:text-gray-200"
+                  onClick={() => {
+                    setTipe("Pengeluaran");
+                    setKategori("Makanan & Minuman");
+                  }}
+                  className={`py-3 rounded-xl border font-bold text-sm tracking-wide transition duration-150 ${
+                    tipe === "Pengeluaran"
+                      ? "border-red-500 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400"
+                      : "border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white"
                   }`}
                 >
                   🔴 Pengeluaran
@@ -113,32 +143,47 @@ export default function Add() {
               </div>
             </div>
 
+            {/* 💡 INPUT TANGGAL TRANSAKSI */}
+            <div>
+              <label className="block text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 mb-1.5 tracking-wider">
+                Tanggal Transaksi
+              </label>
+              <input
+                type="date"
+                value={tanggalPilihan}
+                onChange={(e) => setTanggalPilihan(e.target.value)}
+                className="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:border-black dark:focus:border-white text-black dark:text-white text-sm font-bold [color-scheme:light] dark:[color-scheme:dark]"
+                required
+              />
+            </div>
+
             {/* Input Nominal Angka */}
             <div>
-              <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1.5 tracking-wider">
+              <label className="block text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 mb-1.5 tracking-wider">
                 Nominal (Rp)
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 placeholder="0"
                 value={nominal}
-                onChange={(e) => setNominal(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0f172a] border border-slate-800 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-100 text-base font-semibold"
+                onChange={(e) => setNominal(formatRibuan(e.target.value))}
+                className="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:border-black dark:focus:border-white text-black dark:text-white text-base font-bold"
                 required
               />
             </div>
 
             {/* Dropdown Kategori */}
             <div>
-              <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1.5 tracking-wider">
+              <label className="block text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 mb-1.5 tracking-wider">
                 Kategori
               </label>
               <select
                 value={kategori}
                 onChange={(e) => setKategori(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0f172a] border border-slate-800 rounded-xl focus:outline-none focus:border-blue-500 text-slate-200 text-sm font-medium"
+                className="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:border-black dark:focus:border-white text-black dark:text-white text-sm font-bold"
               >
-                {tipe === "pemasukan" ? (
+                {tipe === "Pemasukan" ? (
                   <>
                     <option>Gaji / Pendapatan</option>
                     <option>Investasi</option>
@@ -157,9 +202,9 @@ export default function Add() {
               </select>
             </div>
 
-            {/* Input Keterangan Opsional */}
+            {/* Input Keterangan */}
             <div>
-              <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1.5 tracking-wider">
+              <label className="block text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 mb-1.5 tracking-wider">
                 Keterangan
               </label>
               <input
@@ -167,17 +212,17 @@ export default function Add() {
                 placeholder="Contoh: Beli kopi manual brew"
                 value={keterangan}
                 onChange={(e) => setKeterangan(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0f172a] border border-slate-800 rounded-xl focus:outline-none focus:border-blue-500 text-slate-200 text-sm"
+                className="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:border-black dark:focus:border-white text-black dark:text-white text-sm font-bold"
               />
             </div>
 
-            {/* Tombol Simpan Eksekusi */}
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white py-3.5 rounded-xl font-bold text-sm tracking-wide shadow-lg shadow-blue-500/10 transition duration-200 active:scale-[0.99]"
+                disabled={isLoading}
+                className="w-full bg-black text-white dark:bg-white dark:text-black hover:bg-zinc-900 dark:hover:bg-zinc-100 py-3.5 rounded-xl font-black text-sm tracking-wide transition duration-150 disabled:opacity-50"
               >
-                Simpan Transaksi
+                {isLoading ? "Menyimpan..." : "Simpan Transaksi"}
               </button>
             </div>
           </form>
