@@ -28,7 +28,7 @@ export default function About() {
           <p className="text-sm text-zinc-800 dark:text-zinc-300 leading-relaxed">
             Banyak aplikasi keuangan di luar sana yang menyimpan data sensitif
             Anda di server awan (*cloud*).{" "}
-            <span className="text-amber-600 dark:text-amber-400 font-black">
+            <span className="text-black dark:text-white font-black">
               MyMoney
             </span>{" "}
             lahir dengan pendekatan yang berbeda. Kami percaya bahwa data
