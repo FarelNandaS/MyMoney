@@ -5,6 +5,7 @@ import AppShell from "@/components/AppShell";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/database/db";
 import { formatUangRupiah } from "@/utils/formatUang";
+import { BriefcaseBusiness, Coffee, Search, X } from "lucide-react";
 
 export default function History() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -99,8 +100,8 @@ export default function History() {
               }}
               className="w-full pl-9 pr-4 py-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:border-black dark:focus:border-white text-sm text-black dark:text-white placeholder-zinc-400 font-bold"
             />
-            <span className="absolute left-3 top-2.5 text-zinc-400 text-sm">
-              🔍
+            <span className="absolute left-2.5 top-2 text-zinc-400 text-sm">
+              <Search />
             </span>
           </div>
         </div>
@@ -128,7 +129,7 @@ export default function History() {
         {/* DAFTAR RIWAYAT TRANSAKSI */}
         <div className="space-y-3">
           {currentTransactions.map((item) => {
-            const isPemasukan = item.type === "pemasukan";
+            const isPemasukan = item.type === "Pemasukan";
             return (
               <div
                 key={item.id}
@@ -138,11 +139,11 @@ export default function History() {
                   <div
                     className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg ${
                       isPemasukan
-                        ? "bg-emerald-50 dark:bg-emerald-950/40"
-                        : "bg-red-50 dark:bg-red-950/40"
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500"
+                        : "bg-red-50 dark:bg-red-950/40 text-red-500"
                     }`}
                   >
-                    {isPemasukan ? "💼" : "☕"}
+                    {isPemasukan ? (<BriefcaseBusiness />) : (<Coffee />)}
                   </div>
 
                   <div>
@@ -176,7 +177,7 @@ export default function History() {
                     className="p-2 text-zinc-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500 dark:hover:bg-zinc-900 rounded-lg transition active:scale-95"
                     title="Hapus Transaksi"
                   >
-                    ❌
+                    <X />
                   </button>
                 </div>
               </div>

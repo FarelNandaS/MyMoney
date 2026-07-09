@@ -1,6 +1,7 @@
 "use client";
 
 import AppShell from "@/components/AppShell";
+import { Bot, ChartColumnBig, Contact, Lightbulb, Save, Shield } from "lucide-react";
 import Image from "next/image";
 
 export default function About() {
@@ -19,7 +20,7 @@ export default function About() {
         {/* 2. KARTU MANIFESTO PRIVASI & EFFICIENCY */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-4 shadow-sm">
           <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
-            <span className="text-lg">🛡️</span>
+            <span className="text-lg"><Shield /></span>
             <h3 className="text-xs font-black uppercase tracking-wider">
               Filosofi Keamanan Data
             </h3>
@@ -44,7 +45,7 @@ export default function About() {
         {/* 3. PROSES DEVELOPMENT & PERAN AI */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-3 shadow-sm">
           <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
-            <span className="text-lg">🤖</span>
+            <span className="text-lg"><Bot /></span>
             <h3 className="text-xs font-black uppercase tracking-wider">
               Efisiensi Pengembangan
             </h3>
@@ -67,7 +68,7 @@ export default function About() {
           {/* Card Cara Kerja IndexedDB */}
           <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 p-5 rounded-2xl shadow-sm">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-base">💾</span>
+              <span className="text-base"><Save /></span>
               <h4 className="text-sm font-black">IndexedDB & Dexie.js</h4>
             </div>
             <p className="text-xs text-zinc-400 dark:text-zinc-500 leading-relaxed">
@@ -82,7 +83,7 @@ export default function About() {
           {/* Card Cara Kerja Ekspor Excel */}
           <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 p-5 rounded-2xl shadow-sm">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-base">📊</span>
+              <span className="text-base"><ChartColumnBig /></span>
               <h4 className="text-sm font-black">Portabilitas Excel</h4>
             </div>
             <p className="text-xs text-zinc-400 dark:text-zinc-500 leading-relaxed">
@@ -98,7 +99,7 @@ export default function About() {
         {/* 5. SPECIAL THANKS / APRESIASI */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-3 shadow-sm">
           <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
-            <span className="text-lg">💡</span>
+            <span className="text-lg"><Lightbulb /></span>
             <h3 className="text-xs font-black uppercase tracking-wider">
               Apresiasi Khusus
             </h3>
@@ -118,7 +119,7 @@ export default function About() {
         {/* 6. SATU SECTION: PEMBUAT, KONTAK & LAPORAN BUG */}
         <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-5 shadow-sm">
           <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-900 pb-3">
-            <span className="text-lg">🧑‍💻</span>
+            <span className="text-lg"><Contact /></span>
             <h3 className="text-xs font-black uppercase tracking-wider">Pembuat & Laporan Masalah</h3>
           </div>
           

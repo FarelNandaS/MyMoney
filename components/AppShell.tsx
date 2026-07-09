@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { CircleQuestionMark, History, Home, Plus, Settings } from 'lucide-react';
 
 type props = {
     children: React.ReactNode;
@@ -61,12 +62,12 @@ export default function AppShell({ children } : props) {
         <div className="max-w-4xl mx-auto flex justify-between items-center h-16 relative">
           
           <button onClick={() => router.push('/')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/')}`}>
-            <span className="text-xl">🏠</span>
+            <span className="text-xl"><Home /></span>
             <span className="text-[10px] font-bold mt-0.5">Home</span>
           </button>
 
           <button onClick={() => router.push('/history')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/history')}`}>
-            <span className="text-xl">📋</span>
+            <span className="text-xl"><History /></span>
             <span className="text-[10px] font-bold mt-0.5">History</span>
           </button>
 
@@ -76,19 +77,19 @@ export default function AppShell({ children } : props) {
               onClick={() => router.push('/add')}
               className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95 transform hover:-translate-y-0.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black hover:bg-black dark:hover:bg-white border border-zinc-700 dark:border-zinc-300`}
             >
-              <span className="text-2xl font-black">+</span>
+              <span className="text-2xl font-black"><Plus /></span>
             </button>
           </div>
           
           <div className="w-14"></div>
 
           <button onClick={() => router.push('/settings')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/settings')}`}>
-            <span className="text-xl">⚙️</span>
+            <span className="text-xl"><Settings /></span>
             <span className="text-[10px] font-bold mt-0.5">Settings</span>
           </button>
 
           <button onClick={() => router.push('/about')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/about')}`}>
-            <span className="text-xl">❓</span>
+            <span className="text-xl"><CircleQuestionMark /></span>
             <span className="text-[10px] font-bold mt-0.5">About</span>
           </button>
 

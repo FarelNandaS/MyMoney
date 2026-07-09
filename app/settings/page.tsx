@@ -2,7 +2,8 @@
 
 import AppShell from "@/components/AppShell";
 import { db } from "@/database/db";
-import React, { useEffect, useState } from "react";
+import { Download, Moon, Palette, Save, Sun, Trash2, TriangleAlert, Upload } from "lucide-react";
+import React, { useState } from "react";
 import * as XLSX from 'xlsx';
 
 export default function Settings() {
@@ -154,7 +155,7 @@ export default function Settings() {
         {/* 🎨 OPSI 1: KUSTOMISASI TEMA */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-4 shadow-sm">
           <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
-            <span className="text-base">🎨</span>
+            <span className="text-base"><Palette /></span>
             <h3 className="text-xs font-black uppercase tracking-wider">Tema Tampilan</h3>
           </div>
           
@@ -167,7 +168,7 @@ export default function Settings() {
                   : "bg-white text-black border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800 hover:text-black dark:hover:text-white"
               }`}
             >
-              ☀️ Terang (Light)
+              <Sun /> Terang (Light)
             </button>
             <button
               onClick={() => handleThemeChange("dark")}
@@ -177,7 +178,7 @@ export default function Settings() {
                   : "bg-white text-black border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800 hover:text-black dark:hover:text-white"
               }`}
             >
-              🌙 Gelap (Dark)
+              <Moon /> Gelap (Dark)
             </button>
           </div>
         </div>
@@ -185,7 +186,7 @@ export default function Settings() {
         {/* 💾 OPSI 2: MANAJEMEN BACKUP DATA (EXCEL) */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-5 shadow-sm">
           <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
-            <span className="text-base">💾</span>
+            <span className="text-base"><Save /></span>
             <h3 className="text-xs font-black uppercase tracking-wider">Cadangkan & Pemulihan</h3>
           </div>
 
@@ -198,14 +199,14 @@ export default function Settings() {
             {/* Tombol Ekspor */}
             <button
               onClick={exportToExcel}
-              className="px-5 py-2.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black hover:bg-black dark:hover:bg-white text-xs font-bold rounded-xl border border-zinc-700 dark:border-zinc-300 shadow-sm transition"
+              className="flex items-center gap-2 px-5 py-2.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black hover:bg-black dark:hover:bg-white text-xs font-bold rounded-xl border border-zinc-700 dark:border-zinc-300 shadow-sm transition"
             >
-              📤 Ekspor ke Excel (.xlsx)
+              <Upload /> Ekspor ke Excel (.xlsx)
             </button>
 
             {/* Tombol Impor dengan Indikator Hijau */}
-            <label className="px-5 py-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-xl shadow-sm hover:bg-emerald-100 dark:hover:bg-emerald-950/70 transition cursor-pointer inline-block">
-              📥 Impor dari Excel
+            <label className="flex items-center gap-2 px-5 py-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-xl shadow-sm hover:bg-emerald-100 dark:hover:bg-emerald-950/70 transition cursor-pointer">
+              <Download /> Impor dari Excel
               <input
                 type="file"
                 accept=".xlsx, .xls"
@@ -219,7 +220,7 @@ export default function Settings() {
         {/* ⚠️ OPSI 3: AREA BAHAYA (RESET DATA) */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-4 shadow-sm">
           <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
-            <span className="text-base">⚠️</span>
+            <span className="text-red-500"><TriangleAlert /></span>
             <h3 className="text-xs font-black text-red-500 uppercase tracking-wider">Zona Bahaya</h3>
           </div>
           
@@ -230,9 +231,9 @@ export default function Settings() {
           <div className="pt-1">
             <button
               onClick={resetDatabase}
-              className="px-5 py-2.5 bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-xs font-bold rounded-xl transition duration-150"
+              className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-xs font-bold rounded-xl transition duration-150"
             >
-              🗑️ Hapus Semua Data Transaksi
+              <Trash2 /> Hapus Semua Data Transaksi
             </button>
           </div>
         </div>

@@ -5,6 +5,7 @@ import AppShell from "@/components/AppShell";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/database/db";
 import { formatUangRupiah } from "@/utils/formatUang";
+import { BriefcaseBusiness, ChartColumnBig, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Coffee } from "lucide-react";
 
 export default function Home() {
   const [filterWaktu, setFilterWaktu] = useState("Bulanan");
@@ -81,7 +82,7 @@ export default function Home() {
     let totalPengeluaran = 0;
 
     transactions.forEach((t) => {
-      if (t.type === "pemasukan") {
+      if (t.type === "Pemasukan") {
         totalPemasukan += t.amount;
       } else {
         totalPengeluaran += t.amount;
@@ -155,7 +156,7 @@ export default function Home() {
             onClick={() => setOffsetPeriode((prev) => prev - 1)}
             className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm font-black text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition"
           >
-            ◀
+            <ChevronLeft />
           </button>
           
           <div className="text-center">
@@ -171,7 +172,7 @@ export default function Home() {
             onClick={() => setOffsetPeriode((prev) => prev + 1)}
             className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm font-black text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition"
           >
-            ▶
+            <ChevronRight />
           </button>
         </div>
 
@@ -200,14 +201,14 @@ export default function Home() {
               ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400"
               : "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400"
           }`}>
-            <span>{saldo >= 0 ? "▲" : "▼"}</span> {saldo >= 0 ? "SURPLUS" : "DEFISIT"}
+            <span>{saldo >= 0 ? (<ChevronUp />) : (<ChevronDown />)}</span> {saldo >= 0 ? "SURPLUS" : "DEFISIT"}
           </div>
         </div>
 
         {/* VISUALISASI KOMPOSISI PENGELUARAN */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center">
           <div className="w-full flex items-center gap-2 mb-6 border-b border-zinc-100 dark:border-zinc-900 pb-3">
-            <span className="text-lg">📊</span>
+            <span className="text-lg"><ChartColumnBig /></span>
             <h4 className="text-sm font-black text-black dark:text-white uppercase tracking-wider">Komposisi Pengeluaran</h4>
           </div>
 
@@ -231,15 +232,15 @@ export default function Home() {
           <div className="space-y-2">
             {transactions &&
               transactions.slice(0, 3).map((item) => {
-                const isPemasukan = item.type === "pemasukan";
+                const isPemasukan = item.type === "Pemasukan";
                 return (
                   <div
                     key={item.id}
                     className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl flex justify-between items-center"
                   >
                     <div className="flex items-center gap-3">
-                      <span className={`text-xl p-2 rounded-lg ${isPemasukan ? "bg-emerald-50 dark:bg-emerald-950/40" : "bg-red-50 dark:bg-red-950/40"}`}>
-                        {isPemasukan ? "💼" : "☕"}
+                      <span className={`text-xl p-2 rounded-lg ${isPemasukan ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500" : "bg-red-50 dark:bg-red-950/40 text-red-500"}`}>
+                        {isPemasukan ? (<BriefcaseBusiness />) : (<Coffee />)}
                       </span>
                       <div>
                         <p className="text-sm font-bold text-black dark:text-white">{item.note}</p>

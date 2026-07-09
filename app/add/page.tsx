@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { db } from "@/database/db";
+import { FileText } from "lucide-react";
 
 export default function Add() {
   const router = useRouter();
@@ -94,7 +95,7 @@ export default function Add() {
           
           <div className="flex justify-between items-center mb-6 border-b border-zinc-200 dark:border-zinc-900 pb-3">
             <h3 className="text-base font-black flex items-center gap-2 tracking-tight">
-              <span>📝</span> Tambah Transaksi
+              <span><FileText /></span> Tambah Transaksi
             </h3>
             <button
               type="button"
