@@ -5,7 +5,7 @@ import AppShell from "@/components/AppShell";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/database/db";
 import { formatUangRupiah } from "@/utils/formatUang";
-import { BriefcaseBusiness, Coffee, Search, X } from "lucide-react";
+import { BriefcaseBusiness, Coffee, Mailbox, Search, X } from "lucide-react";
 
 export default function History() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -188,7 +188,7 @@ export default function History() {
         {/* JIKA DATA KOSONG */}
         {totalItems === 0 && (
           <div className="text-center py-12 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl">
-            <span className="text-3xl">📭</span>
+            <span className="text-zinc-400 flex items-center justify-center"><Mailbox size={50}/></span>
             <p className="text-sm text-zinc-400 mt-2">
               Belum ada catatan transaksi yang sesuai.
             </p>
