@@ -21,6 +21,7 @@ export const metadata: Metadata = {
     description: "Website pencatatan uang privat mengunakan database local tanpa campur tangan dari pihak manapun.",
     type: 'website',
   },
+  manifest: '/manifest.webmanifest',
   icons: {
     icon: "/icon.png",
   },
