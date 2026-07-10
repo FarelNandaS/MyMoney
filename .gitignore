@@ -20,6 +20,11 @@
 # production
 /build
 
+# 💡 TAMBAHKAN BARIS INI agar file PWA di folder public tidak ikut terblokir:
+!/public/sw.js
+!/public/workbox-*.js
+!/public/worker-*.js
+
 # misc
 .DS_Store
 *.pem
