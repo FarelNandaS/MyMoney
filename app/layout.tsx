@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.png",
   },
+  manifest: "/manifest.json",
   authors: [{name: "Farel Nanda Setiawan"}],
   keywords: ['My Money', 'My money id', 'Pengelola uang', 'Pengelola uang indonesia', 'Monitoring uang'],
   verification: {
