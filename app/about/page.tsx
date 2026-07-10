@@ -186,6 +186,9 @@ export default function About() {
             <span className="bg-zinc-100 dark:bg-zinc-900 px-3 py-1 rounded-md border border-zinc-200 dark:border-zinc-800">
               SheetJS
             </span>
+            <span className="bg-zinc-100 dark:bg-zinc-900 px-3 py-1 rounded-md border border-zinc-200 dark:border-zinc-800">
+              Serwist
+            </span>
           </div>
         </div>
       </div>
