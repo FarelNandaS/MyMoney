@@ -108,7 +108,7 @@ export default function Settings() {
             date: row.Tanggal || new Date().toLocaleDateString('id-ID'),
             category: row.Kategori || "Lain-lain",
             amount: Number(row.Nominal) || 0,
-            type: row.Tipe?.toLowerCase() === "pemasukan" ? "pemasukan" : "pengeluaran",
+            type: row.Tipe?.toLowerCase() === "pemasukan" ? "Pemasukan" : "Pengeluaran",
             note: row.Keterangan || "-",
             dateStr: row.Tanggal ? new Date(row.Tanggal).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
             createdAt: Date.now()
