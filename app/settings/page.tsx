@@ -9,9 +9,9 @@ import * as XLSX from 'xlsx';
 export default function Settings() {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') || 'light';
+      return localStorage.getItem('theme') || 'dark';
     }
-    return 'light';
+    return 'dark';
   });
 
   const handleThemeChange = (newTheme: string) => {
