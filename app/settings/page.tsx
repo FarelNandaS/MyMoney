@@ -27,7 +27,7 @@ export default function Settings() {
 
   const exportToExcel = async () => {
     try {
-      const allData = await db.table('transactions').toArray();
+      const allData = await db.table('transactions').orderBy('dateStr').toArray();
 
       if (allData.length === 0) {
         alert('belum ada data');

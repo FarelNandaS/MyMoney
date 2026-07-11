@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { CircleQuestionMark, History, Home, Plus, Settings } from 'lucide-react';
+import Link from 'next/link';
 
 type props = {
     children: React.ReactNode;
@@ -38,10 +39,10 @@ export default function AppShell({ children } : props) {
       
       {/* HEADER */}
       <header className="w-full max-w-7xl mx-auto px-4 py-4 md:px-8 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-900 bg-white dark:bg-black">
-        <div className="flex items-center gap-3">
+        <Link href='/' className="flex items-center gap-3">
           <span className="text-2xl"><Image src={'/icon.png'} alt='icon' width={45} height={45}/></span>
           <h1 className="text-xl font-black tracking-tighter">MyMoney</h1>
-        </div>
+        </Link>
         <div className="flex items-center gap-4">
           <span className="text-xs font-bold text-zinc-500">
             {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' })}
@@ -63,12 +64,12 @@ export default function AppShell({ children } : props) {
           
           <button onClick={() => router.push('/')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/')}`}>
             <span className="text-xl"><Home /></span>
-            <span className="text-[10px] font-bold mt-0.5">Home</span>
+            <span className="text-[10px] font-bold mt-0.5">Beranda</span>
           </button>
 
           <button onClick={() => router.push('/history')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/history')}`}>
             <span className="text-xl"><History /></span>
-            <span className="text-[10px] font-bold mt-0.5">History</span>
+            <span className="text-[10px] font-bold mt-0.5">Riwayat</span>
           </button>
 
           {/* ➕ Tombol Tambah Tengah dengan aksen warna */}
@@ -85,12 +86,12 @@ export default function AppShell({ children } : props) {
 
           <button onClick={() => router.push('/settings')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/settings')}`}>
             <span className="text-xl"><Settings /></span>
-            <span className="text-[10px] font-bold mt-0.5">Settings</span>
+            <span className="text-[10px] font-bold mt-0.5">Pengaturan</span>
           </button>
 
           <button onClick={() => router.push('/about')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/about')}`}>
             <span className="text-xl"><CircleQuestionMark /></span>
-            <span className="text-[10px] font-bold mt-0.5">About</span>
+            <span className="text-[10px] font-bold mt-0.5">Tentang</span>
           </button>
 
         </div>
