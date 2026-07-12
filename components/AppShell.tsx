@@ -62,12 +62,12 @@ export default function AppShell({ children } : props) {
       <nav className="fixed bottom-0 left-0 right-0 border-t border-zinc-200 dark:border-zinc-900 bg-white/95 dark:bg-black/95 backdrop-blur-md px-4 z-20 shadow-xl">
         <div className="max-w-4xl mx-auto flex justify-between items-center h-16 relative">
           
-          <button onClick={() => router.push('/')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/')}`}>
+          <button onClick={() => router.push('/')} className={`flex flex-col items-center justify-center w-16 h-full transition cursor-pointer ${isActive('/')}`}>
             <span className="text-xl"><Home /></span>
             <span className="text-[10px] font-bold mt-0.5">Beranda</span>
           </button>
 
-          <button onClick={() => router.push('/history')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/history')}`}>
+          <button onClick={() => router.push('/history')} className={`flex flex-col items-center justify-center w-16 h-full transition cursor-pointer ${isActive('/history')}`}>
             <span className="text-xl"><History /></span>
             <span className="text-[10px] font-bold mt-0.5">Riwayat</span>
           </button>
@@ -76,7 +76,7 @@ export default function AppShell({ children } : props) {
           <div className="absolute -top-6 left-1/2 -translate-x-1/2">
             <button 
               onClick={() => router.push('/add')}
-              className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95 transform hover:-translate-y-0.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black hover:bg-black dark:hover:bg-white border border-zinc-700 dark:border-zinc-300`}
+              className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer active:scale-95 transform hover:-translate-y-0.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black hover:bg-black dark:hover:bg-white border border-zinc-700 dark:border-zinc-300`}
             >
               <span className="text-2xl font-black"><Plus /></span>
             </button>
@@ -84,12 +84,12 @@ export default function AppShell({ children } : props) {
           
           <div className="w-14"></div>
 
-          <button onClick={() => router.push('/settings')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/settings')}`}>
+          <button onClick={() => router.push('/settings')} className={`flex flex-col items-center justify-center w-16 h-full transition cursor-pointer ${isActive('/settings')}`}>
             <span className="text-xl"><Settings /></span>
             <span className="text-[10px] font-bold mt-0.5">Pengaturan</span>
           </button>
 
-          <button onClick={() => router.push('/about')} className={`flex flex-col items-center justify-center w-16 h-full transition ${isActive('/about')}`}>
+          <button onClick={() => router.push('/about')} className={`flex flex-col items-center justify-center w-16 h-full transition cursor-pointer ${isActive('/about')}`}>
             <span className="text-xl"><CircleQuestionMark /></span>
             <span className="text-[10px] font-bold mt-0.5">Tentang</span>
           </button>

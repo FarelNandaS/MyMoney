@@ -1,12 +1,16 @@
 'use client';
 
 import AppShell from "@/components/AppShell";
+import { useAlert } from "@/components/context/AlertContext";
+import { useConfirm } from "@/components/context/ConfirmContext";
 import { db } from "@/database/db";
 import { Download, Moon, Palette, Save, Sun, Trash2, TriangleAlert, Upload } from "lucide-react";
 import React, { useState } from "react";
 import * as XLSX from 'xlsx';
 
 export default function Settings() {
+  const {showAlert} = useAlert();
+  const {askConfirmation} = useConfirm();
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') || 'dark';
@@ -30,7 +34,7 @@ export default function Settings() {
       const allData = await db.table('transactions').orderBy('dateStr').toArray();
 
       if (allData.length === 0) {
-        alert('belum ada data');
+        showAlert('belum ada data', "error");
         return;
       }
 
@@ -72,7 +76,7 @@ export default function Settings() {
       XLSX.writeFile(workbook, `MyMoney_Backup_${new Date().toISOString().split('T')[0]}.xlsx`);
     } catch (error) {
       console.error(error);
-      alert('Gagal mengekspor data');
+      showAlert('Gagal mengekspor data', 'error');
     }
   }
 
@@ -99,27 +103,40 @@ export default function Settings() {
         const importedData: ImportedRow[] = XLSX.utils.sheet_to_json<ImportedRow>(worksheet, { raw: false });
 
         if (importedData.length === 0) {
-          alert("File Excel kosong atau format tidak sesuai!");
+          showAlert("File Excel kosong atau format tidak sesuai!", 'error');
           return;
         }
 
+        const konversiKeDateStr = (dateInput: string | undefined): string => {
+          if (!dateInput) return new Date().toLocaleDateString('en-CA');
+          const d = new Date(dateInput);
+          if (isNaN(d.getTime())) return new Date().toLocaleDateString('en-CA');
+
+          const tahun = d.getFullYear();
+          const bulan = String(d.getMonth() + 1).padStart(2, '0');
+          const hari = String(d.getDate()).padStart(2, '0');
+          return `${tahun}-${bulan}-${hari}`;
+        };
+
         for (const row of importedData) {
+          const finalDateStr = konversiKeDateStr(row.Tanggal);
+
           await db.table("transactions").add({
             date: row.Tanggal || new Date().toLocaleDateString('id-ID'),
             category: row.Kategori || "Lain-lain",
             amount: Number(row.Nominal) || 0,
             type: row.Tipe?.toLowerCase() === "pemasukan" ? "Pemasukan" : "Pengeluaran",
             note: row.Keterangan || "-",
-            dateStr: row.Tanggal ? new Date(row.Tanggal).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            dateStr: finalDateStr,
             createdAt: Date.now()
           });
         }
 
-        alert(`Berhasil mengimpor ${importedData.length} data transaksi!`);
-        window.location.reload();
+        showAlert(`Berhasil mengimpor ${importedData.length} data transaksi!`, 'success');
+        e.target.value = "";
       } catch (err) {
         console.error(err);
-        alert("Gagal membaca file Excel. Pastikan format kolom sesuai.");
+        showAlert("Gagal membaca file Excel. Pastikan format kolom sesuai.", 'error');
       }
     };
 
@@ -127,17 +144,20 @@ export default function Settings() {
   }
 
   const resetDatabase = async () => {
-    const konfirmasi = confirm(
-      "Apakah Anda yakin ingin menghapus SELURUH catatan keuangan? Tindakan ini tidak dapat dibatalkan!"
-    );
+    const konfirmasi = await askConfirmation({
+      title: "Hapus Semua Data?",
+      message: "Apakah Anda yakin ingin menghapus SELURUH catatan keuangan? Tindakan ini tidak dapat dibatalkan!",
+      confirmText: "Hapus Permanen",
+      cancelText: "Batal",
+      type: "danger" // warna merah tanda bahaya
+    });
     
     if (konfirmasi) {
       try {
         await db.table("transactions").clear();
-        alert("Semua data transaksi berhasil dibersihkan dari perangkat.");
-        window.location.reload();
+        showAlert("Semua data transaksi berhasil dibersihkan dari perangkat.", 'success');
       } catch (error) {
-        alert("Gagal mengosongkan database.");
+        showAlert("Gagal mengosongkan database.", 'error');
       }
     }
   };
@@ -162,7 +182,7 @@ export default function Settings() {
           <div className="grid grid-cols-2 gap-3 max-w-md">
             <button
               onClick={() => handleThemeChange("light")}
-              className={`py-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 ${
+              className={`py-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
                 theme === "light"
                   ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
                   : "bg-white text-black border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800 hover:text-black dark:hover:text-white"
@@ -172,7 +192,7 @@ export default function Settings() {
             </button>
             <button
               onClick={() => handleThemeChange("dark")}
-              className={`py-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 ${
+              className={`py-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
                 theme === "dark"
                   ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
                   : "bg-white text-black border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800 hover:text-black dark:hover:text-white"
@@ -199,7 +219,7 @@ export default function Settings() {
             {/* Tombol Ekspor */}
             <button
               onClick={exportToExcel}
-              className="flex items-center gap-2 px-5 py-2.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black hover:bg-black dark:hover:bg-white text-xs font-bold rounded-xl border border-zinc-700 dark:border-zinc-300 shadow-sm transition"
+              className="flex items-center gap-2 px-5 py-2.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black hover:bg-black dark:hover:bg-white text-xs font-bold rounded-xl border border-zinc-700 dark:border-zinc-300 shadow-sm transition cursor-pointer"
             >
               <Upload /> Ekspor ke Excel (.xlsx)
             </button>
@@ -231,7 +251,7 @@ export default function Settings() {
           <div className="pt-1">
             <button
               onClick={resetDatabase}
-              className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-xs font-bold rounded-xl transition duration-150"
+              className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-xs font-bold rounded-xl transition duration-150 cursor-pointer"
             >
               <Trash2 /> Hapus Semua Data Transaksi
             </button>

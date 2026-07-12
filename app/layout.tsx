@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AlertProvider } from "@/components/context/AlertContext";
+import { ConfirmProvider } from "@/components/context/ConfirmContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,22 +16,30 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "MyMoney",
-  description: "Website ini adalah web untuk mencatat keuangan anda agar anda dapat memonitor keuangan anda",
+  description:
+    "Website ini adalah web untuk mencatat keuangan anda agar anda dapat memonitor keuangan anda",
   openGraph: {
-    siteName: 'MyMoney',
+    siteName: "MyMoney",
     title: "MyMoney | Website pencatatan uang",
-    description: "Website pencatatan uang privat mengunakan database local tanpa campur tangan dari pihak manapun.",
-    type: 'website',
+    description:
+      "Website pencatatan uang privat mengunakan database local tanpa campur tangan dari pihak manapun.",
+    type: "website",
   },
-  manifest: '/manifest.webmanifest',
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icon.png",
   },
-  authors: [{name: "Farel Nanda Setiawan"}],
-  keywords: ['My Money', 'My money id', 'Pengelola uang', 'Pengelola uang indonesia', 'Monitoring uang'],
+  authors: [{ name: "Farel Nanda Setiawan" }],
+  keywords: [
+    "My Money",
+    "My money id",
+    "Pengelola uang",
+    "Pengelola uang indonesia",
+    "Monitoring uang",
+  ],
   verification: {
-    google: "agROQ63Dl86d7ogJSvW5QOatzS1VTv9cNA0RIvJPuq4"
-  }
+    google: "agROQ63Dl86d7ogJSvW5QOatzS1VTv9cNA0RIvJPuq4",
+  },
 };
 
 export default function RootLayout({
@@ -42,7 +52,13 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AlertProvider>
+          <ConfirmProvider>
+            {children}
+          </ConfirmProvider>
+        </AlertProvider>
+      </body>
     </html>
   );
 }

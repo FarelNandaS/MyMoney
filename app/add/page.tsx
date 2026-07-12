@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { db } from "@/database/db";
 import { FileText } from "lucide-react";
+import { useAlert } from "@/components/context/AlertContext";
 
 export default function Add() {
   const router = useRouter();
+  const { showAlert } = useAlert();
 
   // Fungsi pembantu untuk mendapatkan string tanggal hari ini (format: YYYY-MM-DD)
   const getHariIniStr = () => {
@@ -40,12 +42,12 @@ export default function Add() {
     const angkaNumeric = dapatkanAngkaMurni(nominal);
 
     if (!nominal || angkaNumeric <= 0) {
-      alert("Masukkan jumlah nominal yang valid!");
+      showAlert("Masukkan jumlah nominal yang valid!", "error");
       return;
     }
 
     if (!tanggalPilihan) {
-      alert("Silakan pilih tanggal transaksi terlebih dahulu!");
+      showAlert("Silakan pilih tanggal transaksi terlebih dahulu!", "error");
       return;
     }
 
@@ -71,7 +73,7 @@ export default function Add() {
 
       await db.table("transactions").add(dataBaru);
 
-      alert("Catatan keuangan berhasil disimpan!");
+      showAlert("Catatan keuangan berhasil disimpan!", "success");
 
       setTipe('pemasukan');
       setNominal('');
@@ -82,7 +84,7 @@ export default function Add() {
       router.push("/");
     } catch (error) {
       console.error("Gagal menyimpan transaksi:", error);
-      alert("Terjadi kesalahan saat menyimpan data!");
+      showAlert("Terjadi kesalahan saat menyimpan data!", "error");
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +121,7 @@ export default function Add() {
                     setTipe("Pemasukan");
                     setKategori("Gaji / Pendapatan");
                   }}
-                  className={`py-3 rounded-xl border font-bold text-sm tracking-wide transition duration-150 ${
+                  className={`py-3 rounded-xl border font-bold text-sm tracking-wide transition duration-150 cursor-pointer ${
                     tipe === "Pemasukan"
                       ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
                       : "border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white"
@@ -133,7 +135,7 @@ export default function Add() {
                     setTipe("Pengeluaran");
                     setKategori("Makanan & Minuman");
                   }}
-                  className={`py-3 rounded-xl border font-bold text-sm tracking-wide transition duration-150 ${
+                  className={`py-3 rounded-xl border font-bold text-sm tracking-wide transition duration-150 cursor-pointer ${
                     tipe === "Pengeluaran"
                       ? "border-red-500 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400"
                       : "border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white"

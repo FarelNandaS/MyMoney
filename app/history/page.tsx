@@ -6,8 +6,12 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/database/db";
 import { formatUangRupiah } from "@/utils/formatUang";
 import { BriefcaseBusiness, Coffee, Mailbox, Search, X } from "lucide-react";
+import { useAlert } from "@/components/context/AlertContext";
+import { useConfirm } from "@/components/context/ConfirmContext";
 
 export default function History() {
+  const {showAlert} = useAlert();
+  const {askConfirmation} = useConfirm();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("Semua");
 
@@ -27,19 +31,23 @@ export default function History() {
   // 💡 Fungsi untuk menghapus satu baris transaksi berdasarkan ID
   const handleHapusTransaksi = async (
     id?: number,
-    nota?: string,
+    note?: string,
     kategori?: string,
   ) => {
     if (!id) return;
 
-    const konfirmasi = confirm(
-      `Apakah Anda yakin ingin menghapus transaksi "${nota || kategori}"?`,
-    );
+    const konfirmasi = await askConfirmation({
+      title: "Hapus riwayat?",
+      message: `Apakah anda yakin menghapus riwayat dengan keterangan "${note}" ini? Tindakan ini tidak dapat di batalkan!`,
+      confirmText: "Hapus Permanen",
+      cancelText: "Batal",
+      type: "danger"
+    });
 
     if (konfirmasi) {
       try {
         await db.table("transactions").delete(id);
-        alert("Transaksi berhasil dihapus!");
+        showAlert("Transaksi berhasil dihapus!", 'success');
 
         // Atur ulang halaman jika item di halaman saat ini habis setelah dihapus
         const sisaItemHalamanIni = currentTransactions.length;
@@ -48,7 +56,7 @@ export default function History() {
         }
       } catch (error) {
         console.error("Gagal menghapus transaksi:", error);
-        alert("Terjadi kesalahan saat menghapus data!");
+        showAlert("Terjadi kesalahan saat menghapus data!", 'error');
       }
     }
   };
@@ -115,7 +123,7 @@ export default function History() {
                 setFilterType(kat);
                 setCurrentPage(1);
               }}
-              className={`px-4 py-1.5 text-xs font-bold rounded-full border whitespace-nowrap transition ${
+              className={`px-4 py-1.5 text-xs font-bold rounded-full border whitespace-nowrap transition cursor-pointer ${
                 filterType === kat
                   ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
                   : "bg-zinc-100 text-zinc-500 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800 hover:text-black dark:hover:text-white"
