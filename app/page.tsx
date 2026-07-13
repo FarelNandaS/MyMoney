@@ -21,6 +21,14 @@ export default function Home() {
   // State untuk melacak pergeseran waktu (0 = periode saat ini, -1 = periode sebelumnya, dst.)
   const [offsetPeriode, setOffsetPeriode] = useState(0);
 
+  // Mengonversi objek Date menjadi string YYYY-MM-DD secara LOKAL murni (mencegah bug geser UTC)
+  const formatKeFormatLokalStr = (date: Date): string => {
+    const tahun = date.getFullYear();
+    const bulan = String(date.getMonth() + 1).padStart(2, "0");
+    const hari = String(date.getDate()).padStart(2, "0");
+    return `${tahun}-${bulan}-${hari}`;
+  };
+
   // Fungsi pembantu untuk mendapatkan teks deskripsi rentang waktu yang sedang aktif
   const getLabelCakupan = () => {
     const targetDate = new Date();
@@ -57,7 +65,7 @@ export default function Home() {
     return "Semua Transaksi";
   };
 
-  // 💡 TAMBAHKAN FUNGSI INI: Mengubah pilihan kalender langsung menjadi nilai offsetPeriode
+  // Mengubah pilihan kalender langsung menjadi nilai offsetPeriode
   const handleCalendarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     if (!val) return;
@@ -81,16 +89,16 @@ export default function Home() {
     }
   };
 
-  // 💡 TAMBAHKAN FUNGSI INI: Mendapatkan string format YYYY-MM-DD / YYYY-MM untuk ditaruh sebagai value kalender saat ini
+  // Mendapatkan string format YYYY-MM-DD / YYYY-MM untuk ditaruh sebagai value kalender saat ini
   const getCurrentInputValue = () => {
     const targetDate = new Date();
     if (filterWaktu === "Harian") {
       targetDate.setDate(targetDate.getDate() + offsetPeriode);
-      return targetDate.toISOString().split("T")[0]; // YYYY-MM-DD
+      return formatKeFormatLokalStr(targetDate); // 💡 PERBAIKAN: Menggunakan format lokal murni
     }
     if (filterWaktu === "Bulanan") {
       targetDate.setMonth(targetDate.getMonth() + offsetPeriode);
-      return targetDate.toISOString().split("T")[0].substring(0, 7); // YYYY-MM
+      return formatKeFormatLokalStr(targetDate).substring(0, 7); // 💡 PERBAIKAN: Menggunakan format lokal murni (YYYY-MM)
     }
     return "";
   };
@@ -108,7 +116,7 @@ export default function Home() {
 
     if (filterWaktu === "Harian") {
       targetDate.setDate(targetDate.getDate() + offsetPeriode);
-      const targetStr = targetDate.toISOString().split("T")[0];
+      const targetStr = formatKeFormatLokalStr(targetDate); // 💡 PERBAIKAN: Menggunakan format lokal murni
       return semuaData.filter((t) => t.dateStr === targetStr);
     }
 
@@ -117,8 +125,8 @@ export default function Home() {
       const batasAwal = new Date(targetDate);
       batasAwal.setDate(targetDate.getDate() - 6);
 
-      const targetStrMulai = batasAwal.toISOString().split("T")[0];
-      const targetStrSelesai = targetDate.toISOString().split("T")[0];
+      const targetStrMulai = formatKeFormatLokalStr(batasAwal); // 💡 PERBAIKAN: Menggunakan format lokal murni
+      const targetStrSelesai = formatKeFormatLokalStr(targetDate); // 💡 PERBAIKAN: Menggunakan format lokal murni
 
       return semuaData.filter(
         (t) => t.dateStr >= targetStrMulai && t.dateStr <= targetStrSelesai,
@@ -127,10 +135,7 @@ export default function Home() {
 
     if (filterWaktu === "Bulanan") {
       targetDate.setMonth(targetDate.getMonth() + offsetPeriode);
-      const targetBulanStr = targetDate
-        .toISOString()
-        .split("T")[0]
-        .substring(0, 7);
+      const targetBulanStr = formatKeFormatLokalStr(targetDate).substring(0, 7); // 💡 PERBAIKAN: Menggunakan format lokal murni
       return semuaData.filter((t) => t.dateStr?.startsWith(targetBulanStr));
     }
 
@@ -227,10 +232,8 @@ export default function Home() {
             </p>
 
             {filterWaktu !== "Mingguan" ? (
-              /* 💡 PERBAIKAN: Menambahkan 'relative' dan 'onClick' untuk memaksa kalender terbuka */
               <label
                 onClick={(e) => {
-                  // Memaksa browser membuka pop-up kalender bawaan secara programatik
                   e.currentTarget.querySelector("input")?.showPicker();
                 }}
                 className="relative flex items-center gap-1.5 text-xs font-black text-black dark:text-white mt-0.5 cursor-pointer hover:opacity-80 transition bg-zinc-50 dark:bg-zinc-950 px-2 py-0.5 rounded-md border border-zinc-100 dark:border-zinc-900 select-none"
