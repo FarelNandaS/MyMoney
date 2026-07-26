@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import AppShell from "@/components/AppShell";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/database/db";
-import { formatUangRupiah } from "@/utils/formatUang";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { BriefcaseBusiness, Coffee, Mailbox, Search, X } from "lucide-react";
 import { useAlert } from "@/components/context/AlertContext";
 import { useConfirm } from "@/components/context/ConfirmContext";
@@ -174,7 +174,7 @@ export default function History() {
                         : "text-red-600 dark:text-red-400"
                     }`}
                   >
-                    {isPemasukan ? "+" : "-"} {formatUangRupiah(item.amount)}
+                    {isPemasukan ? "+" : "-"}{formatCurrency(item.amount)}
                   </span>
 
                   {/* 💡 TOMBOL HAPUS DATA */}
