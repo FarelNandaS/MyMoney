@@ -4,19 +4,40 @@ import AppShell from "@/components/AppShell";
 import { useAlert } from "@/components/context/AlertContext";
 import { useConfirm } from "@/components/context/ConfirmContext";
 import { db } from "@/database/db";
-import { Download, Moon, Palette, Save, Sun, Trash2, TriangleAlert, Upload } from "lucide-react";
+import { 
+  Download, 
+  Moon, 
+  Palette, 
+  Save, 
+  Sun, 
+  Trash2, 
+  TriangleAlert, 
+  Upload,  
+  CircleDollarSign
+} from "lucide-react";
 import React, { useState } from "react";
 import * as XLSX from 'xlsx';
+import { 
+  getSelectedCurrency, 
+  setSelectedCurrency, 
+  formatCurrency, 
+  POPULAR_CURRENCIES 
+} from "@/utils/formatCurrency";
 
 export default function Settings() {
   const {showAlert} = useAlert();
   const {askConfirmation} = useConfirm();
+
+  // State Tema
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') || 'dark';
     }
     return 'dark';
   });
+
+  // State Mata Uang Global
+  const [currency, setCurrencyState] = useState(() => getSelectedCurrency());
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
@@ -27,7 +48,13 @@ export default function Settings() {
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }
+  };
+
+  const handleCurrencyChange = (newCode: string) => {
+    setSelectedCurrency(newCode);
+    setCurrencyState(newCode);
+    showAlert(`Format mata uang diubah ke ${newCode}`, 'success');
+  };
 
   const exportToExcel = async () => {
     try {
@@ -38,7 +65,6 @@ export default function Settings() {
         return;
       }
 
-      // 1. Buat format data mentah (Array of Objects) seperti semula
       const dataFormat = allData.map((item, index) => ({
         No: index + 1,
         Tanggal: item.date,
@@ -48,28 +74,20 @@ export default function Settings() {
         Keterangan: item.note,
       }));
 
-      // 2. Ubah data menjadi objek worksheet SheetJS
       const worksheet = XLSX.utils.json_to_sheet(dataFormat);
-
-      // 3. ✨ FITUR AUTO-FIT COLUMN (Tanpa Warna / Tanpa Library Tambahan)
-      // Mengambil daftar kunci/header dari data (No, Tanggal, Kategori, dll.)
       const headers = Object.keys(dataFormat[0]);
 
       const colWidths = headers.map((headerText) => {
-        // Cari baris dengan teks terpanjang di kolom ini
         const maxLen = dataFormat.reduce((max, row) => {
           const cellValue = row[headerText as keyof typeof row] ? String(row[headerText as keyof typeof row]) : "";
           return cellValue.length > max ? cellValue.length : max;
         }, headerText.length);
 
-        // Berikan padding +3 karakter supaya rapi dan tidak terlalu mepet dengan garis pembatas
         return { wch: maxLen + 3 };
       });
 
-      // Pasang ukuran kolom otomatis ke worksheet
       worksheet['!cols'] = colWidths;
 
-      // 4. Buat file workbook dan download berkasnya
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Keuangan');
 
@@ -78,7 +96,7 @@ export default function Settings() {
       console.error(error);
       showAlert('Gagal mengekspor data', 'error');
     }
-  }
+  };
 
   const importFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -141,7 +159,7 @@ export default function Settings() {
     };
 
     render.readAsBinaryString(file);
-  }
+  };
 
   const resetDatabase = async () => {
     const konfirmasi = await askConfirmation({
@@ -149,7 +167,7 @@ export default function Settings() {
       message: "Apakah Anda yakin ingin menghapus SELURUH catatan keuangan? Tindakan ini tidak dapat dibatalkan!",
       confirmText: "Hapus Permanen",
       cancelText: "Batal",
-      type: "danger" // warna merah tanda bahaya
+      type: "danger"
     });
     
     if (konfirmasi) {
@@ -169,7 +187,7 @@ export default function Settings() {
         {/* HEADER */}
         <div className="border-b border-zinc-200 dark:border-zinc-900 pb-4">
           <h2 className="text-xl font-black tracking-tight">Setelan Aplikasi</h2>
-          <p className="text-xs text-zinc-400 mt-0.5">Kelola preferensi tema visual dan cadangan data lokal Anda.</p>
+          <p className="text-xs text-zinc-400 mt-0.5">Kelola preferensi tema visual, format mata uang, dan cadangan data lokal Anda.</p>
         </div>
 
         {/* 🎨 OPSI 1: KUSTOMISASI TEMA */}
@@ -203,7 +221,41 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* 💾 OPSI 2: MANAJEMEN BACKUP DATA (EXCEL) */}
+        {/* 💵 OPSI 2: FORMAT MATA UANG GLOBAL */}
+        <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-4 shadow-sm">
+          <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
+            <span className="text-base"><CircleDollarSign /></span>
+            <h3 className="text-xs font-black uppercase tracking-wider">Mata Uang Global</h3>
+          </div>
+
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            Pilih mata uang utama yang akan diterapkan pada seluruh tampilan nominal dan laporan transaksi.
+          </p>
+
+          <div className="space-y-3 max-w-md">
+            <select
+              value={currency}
+              onChange={(e) => handleCurrencyChange(e.target.value)}
+              className="w-full p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs font-bold text-black dark:text-white focus:outline-none cursor-pointer"
+            >
+              {POPULAR_CURRENCIES.map((item) => (
+                <option key={item.code} value={item.code}>
+                  {item.code} - {item.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Live Preview Contoh Tampilan */}
+            <div className="p-3 bg-zinc-100 dark:bg-zinc-900/50 rounded-xl flex justify-between items-center text-xs border border-zinc-200/50 dark:border-zinc-800/50">
+              <span className="text-zinc-500 font-medium">Contoh Tampilan Nominal:</span>
+              <span className="font-black text-emerald-600 dark:text-emerald-400">
+                {formatCurrency(1500000)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* 💾 OPSI 3: MANAJEMEN BACKUP DATA (EXCEL) */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-5 shadow-sm">
           <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
             <span className="text-base"><Save /></span>
@@ -216,7 +268,6 @@ export default function Settings() {
           </p>
 
           <div className="flex flex-wrap gap-3 pt-1">
-            {/* Tombol Ekspor */}
             <button
               onClick={exportToExcel}
               className="flex items-center gap-2 px-5 py-2.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black hover:bg-black dark:hover:bg-white text-xs font-bold rounded-xl border border-zinc-700 dark:border-zinc-300 shadow-sm transition cursor-pointer"
@@ -224,7 +275,6 @@ export default function Settings() {
               <Upload /> Ekspor ke Excel (.xlsx)
             </button>
 
-            {/* Tombol Impor dengan Indikator Hijau */}
             <label className="flex items-center gap-2 px-5 py-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-xl shadow-sm hover:bg-emerald-100 dark:hover:bg-emerald-950/70 transition cursor-pointer">
               <Download /> Impor dari Excel
               <input
@@ -237,7 +287,7 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* ⚠️ OPSI 3: AREA BAHAYA (RESET DATA) */}
+        {/* ⚠️ OPSI 4: AREA BAHAYA (RESET DATA) */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 space-y-4 shadow-sm">
           <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
             <span className="text-red-500"><TriangleAlert /></span>

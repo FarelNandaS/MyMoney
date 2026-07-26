@@ -4,7 +4,7 @@ import { useState } from "react";
 import AppShell from "@/components/AppShell";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/database/db";
-import { formatUangRupiah } from "@/utils/formatUang";
+import { formatCurrency } from "@/utils/formatCurrency";
 import {
   BriefcaseBusiness,
   Calendar,
@@ -269,7 +269,7 @@ export default function Home() {
               Pemasukan
             </p>
             <h3 className="text-2xl font-black mt-1 text-emerald-600 dark:text-emerald-400">
-              {formatUangRupiah(pemasukan)}
+              {formatCurrency(pemasukan)}
             </h3>
           </div>
 
@@ -278,7 +278,7 @@ export default function Home() {
               Pengeluaran
             </p>
             <h3 className="text-2xl font-black mt-1 text-red-600 dark:text-red-400">
-              {formatUangRupiah(pengeluaran)}
+              {formatCurrency(pengeluaran)}
             </h3>
           </div>
         </div>
@@ -292,7 +292,7 @@ export default function Home() {
             className={`text-4xl font-black mt-1 tracking-tight ${saldo >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
           >
             {saldo < 0 ? "-" : ""}
-            {formatUangRupiah(Math.abs(saldo))}
+            {formatCurrency(Math.abs(saldo))}
           </h2>
 
           <div
@@ -372,7 +372,7 @@ export default function Home() {
                     <span
                       className={`text-sm font-black ${isPemasukan ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
                     >
-                      {isPemasukan ? "+" : "-"} {formatUangRupiah(item.amount)}
+                      {isPemasukan ? "+" : "-"} {formatCurrency(item.amount)}
                     </span>
                   </div>
                 );
