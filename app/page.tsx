@@ -16,6 +16,7 @@ import {
   Coffee,
 } from "lucide-react";
 import DailyLimitWidget from "@/components/DailyLimitWidget";
+import LifestyleAnalysisWidget from "@/components/LifestyleAnalysisWidget";
 
 export default function Home() {
   const [filterWaktu, setFilterWaktu] = useState("Bulanan");
@@ -311,8 +312,13 @@ export default function Home() {
         </div>
 
         {/* Card Batas Harian */}
-        {filterWaktu === 'Bulanan' && offsetPeriode === 0 && (
+        {filterWaktu === "Bulanan" && offsetPeriode === 0 && (
           <DailyLimitWidget saldoUtama={saldo} transactions={transactions} />
+        )}
+
+        {/* WIDGET ANALISIS GAYA HIDUP */}
+        {filterWaktu === "Bulanan" && offsetPeriode === 0 && (
+          <LifestyleAnalysisWidget transactions={transactions} />
         )}
 
         {/* VISUALISASI KOMPOSISI PENGELUARAN */}
