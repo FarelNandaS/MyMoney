@@ -15,6 +15,7 @@ import {
   ChevronUp,
   Coffee,
 } from "lucide-react";
+import DailyLimitWidget from "@/components/DailyLimitWidget";
 
 export default function Home() {
   const [filterWaktu, setFilterWaktu] = useState("Bulanan");
@@ -308,6 +309,11 @@ export default function Home() {
             {saldo >= 0 ? "SURPLUS" : "DEFISIT"}
           </div>
         </div>
+
+        {/* Card Batas Harian */}
+        {filterWaktu === 'Bulanan' && offsetPeriode === 0 && (
+          <DailyLimitWidget saldoUtama={saldo} transactions={transactions} />
+        )}
 
         {/* VISUALISASI KOMPOSISI PENGELUARAN */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center">
