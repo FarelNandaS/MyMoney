@@ -22,6 +22,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://mymoney-id.vercel.app'),
   title: {
     default: "MyMoney - Aplikasi Pencatat Keuangan Pribadi & Privat",
     template: "%s | MyMoney"
