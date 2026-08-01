@@ -15,64 +15,98 @@ const geistMono = Geist_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#0f172a",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://mymoney-id.vercel.app'),
+  metadataBase: new URL("https://mymoney-id.vercel.app"),
+
+  // Judul Utama (Branded + Keyword)
   title: {
-    default: "MyMoney - Aplikasi Pencatat Keuangan Pribadi & Privat",
-    template: "%s | MyMoney"
+    default: "MyMoney by Farel – Pencatat Keuangan Harian",
+    template: "%s | MyMoney by Farel",
   },
+
+  // Deskripsi Detail & Panjang (Teroptimasi untuk SEO Google Snippet)
   description:
-    "Kelola dan monitor keuangan Anda dengan aman dan privat menggunakan MyMoney. Aplikasi pencatatan keuangan lokal tanpa pelacakan data.",
-  authors: [{ name: "Farel Nanda Setiawan" }],
+    "MyMoney by Farel adalah aplikasi web pencatatan keuangan harian pribadi yang dikembangkan oleh Farel Nanda Setiawan. Dirancang khusus untuk membantu Anda melacak arus kas (pemasukan & pengeluaran), memantau komposisi belanja, dan menghitung kuota Batas Aman Belanja Harian secara otomatis. 100% gratis, tanpa perlu register/login, tanpa iklan, dan seluruh data tersimpan dengan sangat privat di database lokal browser (IndexedDB) Anda.",
+
   keywords: [
+    "MyMoney by Farel",
+    "MyMoney Farel",
     "MyMoney",
-    "Aplikasi pengelola uang",
-    "Catat keuangan harian",
-    "Aplikasi keuangan privat",
-    "Monitoring pengeluaran gratis",
-    "Pencatat keuangan lokal",
-    "PWA keuangan offline"
+    "Farel Nanda Setiawan",
+    "Catat Keuangan Harian",
+    "Pencatat Pengeluaran Privat",
+    "Batas Aman Belanja Harian",
+    "Aplikasi Keuangan Tanpa Login",
+    "Indie Personal Finance App",
+    "Buku Kas Browser Lokal",
+    "Money Tracker Indonesia",
   ],
-  manifest: "/manifest.webmanifest",
-  icons: {
-    icon: "/icon.png",
-    apple: "/icon.png", // Dukungan ikon perangkat iOS
+
+  authors: [{ name: "Farel Nanda Setiawan", url: "https://github.com/FarelNandaS" }],
+  creator: "Farel Nanda Setiawan",
+  publisher: "Farel Nanda Setiawan",
+
+  alternates: {
+    canonical: "/",
   },
+
+  // OpenGraph untuk Tampilan Preview di WhatsApp / Telegram / Facebook
   openGraph: {
-    siteName: "MyMoney",
-    title: "MyMoney | Aplikasi Pencatat Keuangan Pribadi & Privat",
+    title: "MyMoney by Farel – Pencatat Keuangan Harian & Limit Belanja Privat",
     description:
-      "Pantau pengeluaran dan pemasukan dengan aman. 100% data disimpan secara lokal di perangkat Anda tanpa campur tangan pihak luar.",
-    type: "website",
+      "Kelola keuangan harian dan pantau batas aman belanjamu dengan mudah. Aplikasi pencatat pengeluaran indie karya Farel Nanda Setiawan yang 100% privat, tanpa login, dan tanpa iklan.",
     url: "https://mymoney-id.vercel.app",
+    siteName: "MyMoney by Farel",
+    locale: "id_ID",
+    type: "website",
     images: [
       {
-        url: "/og-image.png", // Siapkan gambar ukuran 1200x630 di folder public untuk thumbnail share
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "MyMoney Dashboard Preview",
+        alt: "Preview Aplikasi MyMoney by Farel",
       },
     ],
   },
+
+  // Twitter / X Preview Card
   twitter: {
     card: "summary_large_image",
-    title: "MyMoney | Aplikasi Pencatat Keuangan Pribadi",
-    description: "Catat dan monitor keuangan harian secara offline dengan aman.",
+    title: "MyMoney by Farel – Pencatat Keuangan Harian & Limit Belanja",
+    description:
+      "Aplikasi web pencatatan keuangan harian privat karya Farel Nanda Setiawan. Lacak transaksi dan kuota belanja harian tanpa perlu login.",
     images: ["/og-image.png"],
   },
-  verification: {
-    google: "agROQ63Dl86d7ogJSvW5QOatzS1VTv9cNA0RIvJPuq4",
-  },
+
   robots: {
     index: true,
     follow: true,
-  }
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+
+  manifest: "/manifest.webmanifest",
+  
+  verification: {
+    google: "agROQ63Dl86d7ogJSvW5QOatzS1VTv9cNA0RIvJPuq4",
+  },
 };
 
 export default function RootLayout({
