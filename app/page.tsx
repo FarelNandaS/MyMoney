@@ -324,11 +324,12 @@ export default function Home() {
   }, [transactions]);
 
   const CATEGORY_COLORS: Record<string, string> = {
-    Makanan: "var(--chart-1)",
+    "Makanan & Minuman": "var(--chart-1)",
     Transportasi: "var(--chart-2)",
-    Hiburan: "var(--chart-3)",
-    Tagihan: "var(--chart-4)",
-    Belanja: "var(--chart-5)",
+    "Belanja Bulanan": "var(--chart-3)",
+    "Hiburan / Hobi": "var(--chart-4)",
+    "Tagihan / Listrik": "var(--chart-5)",
+    "Lain-lain": "var(--chart-6)",
   };
 
   const formatDataDonutChart = useMemo(() => {

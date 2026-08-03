@@ -200,6 +200,7 @@ export default function Add() {
                     <option>Belanja Bulanan</option>
                     <option>Hiburan / Hobi</option>
                     <option>Tagihan / Listrik</option>
+                    <option>Lain-lain</option>
                   </>
                 )}
               </select>
