@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 import AppShell from "@/components/AppShell";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/database/db";
@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 import DailyLimitWidget from "@/components/DailyLimitWidget";
 import LifestyleAnalysisWidget from "@/components/LifestyleAnalysisWidget";
+import { DonutChart } from "@/components/DonutChart";
+import { LineChartTrack } from "@/components/LineChart";
+import { PieIncomeVsExpense } from "@/components/PieChart";
 
 export default function Home() {
   const [filterWaktu, setFilterWaktu] = useState("Bulanan");
@@ -167,32 +170,203 @@ export default function Home() {
 
   const { pemasukan, pengeluaran, saldo } = hitungKalkulasi();
 
-  const getBigCategory = () => {
-    if (!transactions || pengeluaran === 0)
-      return { nama: "Belum ada data", persentase: 0 };
+  const formatDataForLineChart = useMemo(() => {
+    // 1. Tentukan Tanggal Target berdasarkan filterWaktu & offsetPeriode
+    const targetDate = new Date();
 
-    const petaCategory: Record<string, number> = {};
-    transactions.forEach((t) => {
-      if (t.type === "Pengeluaran") {
-        petaCategory[t.category] = (petaCategory[t.category] || 0) + t.amount;
+    // Helper untuk mengubah Date ke ISO String Lokal "YYYY-MM-DD"
+    const toLocalISO = (d: Date) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    // ===================================================
+    // 1. FILTER HARIAN (1 Hari Target)
+    // ===================================================
+    if (filterWaktu === "Harian") {
+      targetDate.setDate(targetDate.getDate() + offsetPeriode);
+      const targetStr = toLocalISO(targetDate);
+      const label = targetDate.toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+      });
+
+      let totalPemasukan = 0;
+      let totalPengeluaran = 0;
+
+      if (transactions && transactions.length > 0) {
+        transactions.forEach((tx) => {
+          if (tx.dateStr === targetStr) {
+            const amount = Number(tx.amount) || 0;
+            if (tx.type === "Pemasukan") totalPemasukan += amount;
+            if (tx.type === "Pengeluaran") totalPengeluaran += amount;
+          }
+        });
+      }
+
+      return [
+        { label, pemasukan: totalPemasukan, pengeluaran: totalPengeluaran },
+      ];
+    }
+
+    // ===================================================
+    // 2. FILTER MINGGUAN (Rentang 7 Hari Aktif)
+    // ===================================================
+    if (filterWaktu === "Mingguan") {
+      targetDate.setDate(targetDate.getDate() + offsetPeriode * 7);
+      const mapHarian: Record<
+        string,
+        { label: string; pemasukan: number; pengeluaran: number }
+      > = {};
+
+      // Generate template 7 hari (mulai dari 6 hari lalu sampai targetDate)
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(targetDate);
+        d.setDate(targetDate.getDate() - i);
+
+        const keyStr = toLocalISO(d);
+        const label = d.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "short",
+        });
+
+        mapHarian[keyStr] = { label, pemasukan: 0, pengeluaran: 0 };
+      }
+
+      // Isikan data dari transactions
+      if (transactions && transactions.length > 0) {
+        transactions.forEach((tx) => {
+          if (mapHarian[tx.dateStr]) {
+            const amount = Number(tx.amount) || 0;
+            if (tx.type === "Pemasukan")
+              mapHarian[tx.dateStr].pemasukan += amount;
+            if (tx.type === "Pengeluaran")
+              mapHarian[tx.dateStr].pengeluaran += amount;
+          }
+        });
+      }
+
+      return Object.values(mapHarian);
+    }
+
+    // ===================================================
+    // 3. FILTER BULANAN (Semua Hari dalam Bulan Aktif)
+    // ===================================================
+    if (filterWaktu === "Bulanan") {
+      targetDate.setMonth(targetDate.getMonth() + offsetPeriode);
+      const year = targetDate.getFullYear();
+      const month = targetDate.getMonth();
+
+      // Hitung jumlah hari dalam bulan tersebut (28, 29, 30, atau 31)
+      const jumlahHari = new Date(year, month + 1, 0).getDate();
+      const mapBulanan: Record<
+        string,
+        { label: string; pemasukan: number; pengeluaran: number }
+      > = {};
+
+      // Generate template tanggal 1 s.d jumlahHari
+      for (let day = 1; day <= jumlahHari; day++) {
+        const d = new Date(year, month, day);
+        const keyStr = toLocalISO(d);
+        const label = String(day).padStart(2, "0"); // Sumbu X berupa tanggal "01", "02", dst.
+
+        mapBulanan[keyStr] = { label, pemasukan: 0, pengeluaran: 0 };
+      }
+
+      // Isikan data transaksi
+      if (transactions && transactions.length > 0) {
+        transactions.forEach((tx) => {
+          if (mapBulanan[tx.dateStr]) {
+            const amount = Number(tx.amount) || 0;
+            if (tx.type === "Pemasukan")
+              mapBulanan[tx.dateStr].pemasukan += amount;
+            if (tx.type === "Pengeluaran")
+              mapBulanan[tx.dateStr].pengeluaran += amount;
+          }
+        });
+      }
+
+      return Object.values(mapBulanan);
+    }
+
+    return [];
+  }, [transactions, filterWaktu, offsetPeriode]);
+
+  const formatDataRasioPie = useMemo(() => {
+    if (pemasukan === 0 && pengeluaran === 0) return [];
+
+    const grandTotal = pemasukan + pengeluaran;
+
+    // 2. Hitung persentase (cegah error division by zero jika grandTotal === 0)
+    const persenPemasukan =
+      grandTotal > 0 ? Number(((pemasukan / grandTotal) * 100).toFixed(1)) : 0;
+    const persenPengeluaran =
+      grandTotal > 0
+        ? Number(((pengeluaran / grandTotal) * 100).toFixed(1))
+        : 0;
+
+    return [
+      {
+        jenis: "Pemasukan",
+        persentase: persenPemasukan, // Nilai persentase (contoh: 65.5)
+        nominalAsli: pemasukan, // Opsional: tetap simpan jika nanti butuh tooltip nominal
+        fill: "#22c55e", // Green
+      },
+      {
+        jenis: "Pengeluaran",
+        persentase: persenPengeluaran, // Nilai persentase (contoh: 34.5)
+        nominalAsli: pengeluaran,
+        fill: "#ef4444", // Red
+      },
+    ];
+  }, [transactions]);
+
+  const CATEGORY_COLORS: Record<string, string> = {
+    Makanan: "var(--chart-1)",
+    Transportasi: "var(--chart-2)",
+    Hiburan: "var(--chart-3)",
+    Tagihan: "var(--chart-4)",
+    Belanja: "var(--chart-5)",
+  };
+
+  const formatDataDonutChart = useMemo(() => {
+    if (!transactions) return [];
+
+    // 1. Kelompokkan nominal per kategori
+    const categoryTotals: Record<string, number> = {};
+    let totalPengeluaran = 0;
+
+    transactions.forEach((item) => {
+      if (item.type === "Pengeluaran") {
+        categoryTotals[item.category] =
+          (categoryTotals[item.category] || 0) + item.amount;
+        totalPengeluaran += item.amount;
       }
     });
 
-    let kategoriTeratas = "";
-    let jumlahTeratas = 0;
+    // 2. Petakan menjadi array data chart beserta persentase
+    return Object.entries(categoryTotals).map(([category, amount]) => {
+      const percentage =
+        totalPengeluaran > 0
+          ? Math.round((amount / totalPengeluaran) * 100)
+          : 0;
 
-    for (const [key, value] of Object.entries(petaCategory)) {
-      if (value > jumlahTeratas) {
-        jumlahTeratas = value;
-        kategoriTeratas = key;
-      }
-    }
+      return {
+        category,
+        amount, // tetap disimpankan nominal asli
+        percentage, // nilai %
+        fill: CATEGORY_COLORS[category] || "var(--chart-1)",
+      };
+    });
+  }, [transactions]);
 
-    const persentase = Math.round((jumlahTeratas / pengeluaran) * 100);
-    return { nama: kategoriTeratas, persentase };
-  };
+  const totalAmount = React.useMemo(() => {
+    return formatDataDonutChart.reduce((acc, curr) => acc + curr.amount, 0);
+  }, [formatDataDonutChart]);
 
-  const kategoriUtama = getBigCategory();
+  console.log(formatDataForLineChart);
 
   return (
     <AppShell>
@@ -312,43 +486,53 @@ export default function Home() {
         </div>
 
         {/* Card Batas Harian */}
-        {filterWaktu === "Bulanan" && offsetPeriode === 0 && (
+        {/* {filterWaktu === "Bulanan" && offsetPeriode === 0 && (
           <DailyLimitWidget saldoUtama={saldo} transactions={transactions} />
-        )}
+        )} */}
 
         {/* WIDGET ANALISIS GAYA HIDUP */}
-        {filterWaktu === "Bulanan" && offsetPeriode === 0 && (
+        {/* {filterWaktu === "Bulanan" && offsetPeriode === 0 && (
           <LifestyleAnalysisWidget transactions={transactions} />
-        )}
+        )} */}
 
-        {/* VISUALISASI KOMPOSISI PENGELUARAN */}
         <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center">
           <div className="w-full flex items-center gap-2 mb-6 border-b border-zinc-100 dark:border-zinc-900 pb-3">
             <span className="text-lg">
               <ChartColumnBig />
             </span>
             <h4 className="text-sm font-black text-black dark:text-white uppercase tracking-wider">
-              Komposisi Pengeluaran
+              Statistik Keuangan
             </h4>
           </div>
 
-          <div className="relative w-full max-w-[280px] h-[140px] overflow-hidden flex items-end justify-center mt-2">
-            <div
-              className={`absolute top-0 w-[260px] h-[260px] rounded-full border-[28px] border-b-transparent transition-all duration-500 ${
-                pengeluaran > 0
-                  ? "border-red-500"
-                  : "border-zinc-200 dark:border-zinc-800"
-              }`}
-            ></div>
+          <LineChartTrack data={formatDataForLineChart} />
+        </div>
 
-            <div className="text-center z-10 mb-2">
-              <p className="text-xs text-zinc-400 dark:text-zinc-500 font-bold uppercase">
-                {kategoriUtama.nama}
-              </p>
-              <p className="text-2xl font-black text-black dark:text-white">
-                {kategoriUtama.persentase}%
-              </p>
+        {/* VISUALISASI KOMPOSISI PENGELUARAN DAN PEMASUKAN VS PENGELUARAN */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center">
+            <div className="w-full flex items-center gap-2 mb-6 border-b border-zinc-100 dark:border-zinc-900 pb-3">
+              <span className="text-lg">
+                <ChartColumnBig />
+              </span>
+              <h4 className="text-sm font-black text-black dark:text-white uppercase tracking-wider">
+                Komposisi Pengeluaran
+              </h4>
             </div>
+
+            <DonutChart data={formatDataDonutChart} totalAmount={totalAmount} />
+          </div>
+          <div className="bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center">
+            <div className="w-full flex items-center gap-2 mb-6 border-b border-zinc-100 dark:border-zinc-900 pb-3">
+              <span className="text-lg">
+                <ChartColumnBig />
+              </span>
+              <h4 className="text-sm font-black text-black dark:text-white uppercase tracking-wider">
+                Pemasukan VS Pengeluaran
+              </h4>
+            </div>
+
+            <PieIncomeVsExpense data={formatDataRasioPie} />
           </div>
         </div>
 
