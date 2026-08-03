@@ -366,8 +366,6 @@ export default function Home() {
     return formatDataDonutChart.reduce((acc, curr) => acc + curr.amount, 0);
   }, [formatDataDonutChart]);
 
-  console.log(formatDataForLineChart);
-
   return (
     <AppShell>
       <div className="w-full max-w-4xl mx-auto space-y-6 pb-12">
