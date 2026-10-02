@@ -182,7 +182,7 @@ export default function History() {
                     onClick={() =>
                       handleHapusTransaksi(item.id, item.note, item.category)
                     }
-                    className="p-2 text-zinc-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500 dark:hover:bg-zinc-900 rounded-lg transition active:scale-95"
+                    className="p-2 text-zinc-400 hover:text-zinc-100 dark:hover:text-red-400 hover:bg-red-500 dark:hover:bg-zinc-900 rounded-lg transition active:scale-95"
                     title="Hapus Transaksi"
                   >
                     <X />
